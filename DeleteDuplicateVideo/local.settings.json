@@ -1,0 +1,11 @@
+{
+    "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "AzureWebJobsDashboard": "",
+    "AMSAccount": "ccmediaservice",
+    "AMSKey": "U4ZKdTAB1NGRUPwmDA9ze5RXyu51IZbQKds7nomut3E=",
+    "MediaServicesStorageAccountName": "ccmediaservice",
+    "MediaServicesStorageAccountKey": "akYtOgqTIfvC7Ll952NY9yqXgDv4Cm2rchO1B+1Wdcq/vwHk6OxhSMTgyUonReMXVRhDVokGNYfgETlSB2Wr6g=="
+  }
+}
