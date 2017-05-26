@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeleteDuplicateVideo.Helper
+namespace JobMonitor.Helper
 {
     public class Constants
     {
@@ -13,6 +13,9 @@ namespace DeleteDuplicateVideo.Helper
         public const string MediaServiceKey = "AMSKey";
         public const string MediaBlobName = "MediaServicesStorageAccountName";
         public const string MediaBlobKey = "MediaServicesStorageAccountKey";
+        public const string WebHookEndpoint = "WebHookEndpoint";
+        public const string SigningKey = "SigningKey";
         public const string SignatureHeaderValueTemplate = "sha256 ={0}";
+        public const string DuplicateActionEndpoint = "DuplicateActionEndpoint";
     }
 }

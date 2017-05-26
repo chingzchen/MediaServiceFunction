@@ -25,6 +25,10 @@ namespace DeleteDuplicateVideo
         static string _storageAccountName = GetEnvironmentVariable(Constants.MediaBlobName);
         static string _storageAccountKey = GetEnvironmentVariable(Constants.MediaBlobKey);
 
+        //Security
+        private static string _webHookEndpoint = GetEnvironmentVariable("WebHookEndpoint");
+        private static string _signingKey = GetEnvironmentVariable("SigningKey");
+
         //MEdia Service Contect
         private static CloudMediaContext _context = null;
 
