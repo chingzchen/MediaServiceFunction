@@ -8,7 +8,7 @@ using Microsoft.WindowsAzure.MediaServices.Client;
 using System;
 using Microsoft.WindowsAzure.Storage.Auth;
 using System.Collections.Generic;
-
+using DeleteDuplicateVideo.Helper;
 
 namespace DeleteDuplicateVideo
 {
@@ -17,12 +17,12 @@ namespace DeleteDuplicateVideo
         private static MediaServicesCredentials cachedcredential = null;
 
         //Media Service Account Info
-        private static readonly string _mediaServicesAccountName = "ccmediaservice";//GetEnvironmentVariable(Constants.MediaServiceAccout);
-        private static readonly string _mediaServicesAccountKey = "U4ZKdTAB1NGRUPwmDA9ze5RXyu51IZbQKds7nomut3E=";//GetEnvironmentVariable(Constants.MediaServiceKey);
+        private static readonly string _mediaServicesAccountName = Environment.GetEnvironmentVariable(Constants.MediaServiceAccout);
+        private static readonly string _mediaServicesAccountKey = Environment.GetEnvironmentVariable(Constants.MediaServiceKey);
 
         //Storage Account Info
-        static string _storageAccountName = "ccmediaservice";//GetEnvironmentVariable(Constants.MediaBlobName);
-        static string _storageAccountKey = "akYtOgqTIfvC7Ll952NY9yqXgDv4Cm2rchO1B+1Wdcq/vwHk6OxhSMTgyUonReMXVRhDVokGNYfgETlSB2Wr6g==";// GetEnvironmentVariable(Constants.MediaBlobKey);      
+        static string _storageAccountName = Environment.GetEnvironmentVariable(Constants.MediaBlobName);
+        static string _storageAccountKey = Environment.GetEnvironmentVariable(Constants.MediaBlobKey);      
 
         //MEdia Service Contect
         private static CloudMediaContext _context = null;
@@ -83,7 +83,7 @@ namespace DeleteDuplicateVideo
         public static string GetEnvironmentVariable(string name)
         {
             return name + ": " +
-                System.Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
+                Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
         }
 
     }

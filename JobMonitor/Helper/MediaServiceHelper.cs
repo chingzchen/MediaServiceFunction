@@ -119,20 +119,30 @@ namespace JobMonitor.Helper
 
         public static string PublishAndBuildStreamingURLs(CloudMediaContext mediaContext, String jobID)
         {
+            string poclicyname= "Streaming policy";
+            string urlForClientStreaming = string.Empty;
             IJob job = mediaContext.Jobs.Where(j => j.Id == jobID).FirstOrDefault();
             IAsset asset = job.OutputMediaAssets.FirstOrDefault();
+            ILocator originLocator;
+            if (asset.Locators.Count ==0)
+            {
+                //Create a locator
+                IAccessPolicy policy = mediaContext.AccessPolicies.Where(p => p.Name.Equals(poclicyname)).FirstOrDefault();
+                if (policy == null)
+                {
+                    //Create a new one policy with 180 days readonly access
+                    policy = mediaContext.AccessPolicies.Create(poclicyname, TimeSpan.FromDays(180), AccessPermissions.Read);
+                }
 
-            // Create a 30-day readonly access policy. 
-            // You cannot create a streaming locator using an AccessPolicy that includes write or delete permissions.
-            IAccessPolicy policy = mediaContext.AccessPolicies.Create("Streaming policy",
-            TimeSpan.FromDays(30),
-            AccessPermissions.Read);
-
-            // Create a locator to the streaming content on an origin. 
-            ILocator originLocator = mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset,
-            policy,
-            DateTime.UtcNow.AddMinutes(-5));
-
+                // Create a locator to the streaming content on an origin. 
+                originLocator = mediaContext.Locators.CreateLocator(LocatorType.OnDemandOrigin, asset,
+                policy,
+                DateTime.UtcNow.AddMinutes(-5));
+            }
+            else
+            {
+                originLocator = asset.Locators.FirstOrDefault();
+            }
 
             // Get a reference to the streaming manifest file from the  
             // collection of files in the asset. 
@@ -142,9 +152,16 @@ namespace JobMonitor.Helper
 
             // Create a full URL to the manifest file. Use this for playback
             // in streaming media clients. 
-            string urlForClientStreaming = originLocator.Path + manifestFile.Name + "/manifest" + "(format=m3u8-aapl)";
+            urlForClientStreaming = originLocator.Path + manifestFile.Name + "/manifest" + "(format=m3u8-aapl)";
             return urlForClientStreaming;
 
+        }
+
+        public static IAsset GetAsset(CloudMediaContext mediaContext, String jobID)
+        {
+            IJob job = mediaContext.Jobs.Where(j => j.Id == jobID).FirstOrDefault();
+            IAsset asset = job.OutputMediaAssets.FirstOrDefault();
+            return asset;
         }
 
         public static string GetAssetName(CloudMediaContext mediaContext, String jobID)

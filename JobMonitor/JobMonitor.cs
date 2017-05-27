@@ -18,13 +18,12 @@ namespace JobMonitor
     public static class JobMonitor
     {
         //Webhook & security
-        static string _webHookEndpoint = "https://ccmediaprocess.azurewebsites.net/api/DeleteDuplicateVideo?code=Ndw0wcN0ZQihuxYyYv03ou5Af6oNhj9hMg1wWmbpSbvEwcC1vAV5KQ=="; //Environment.GetEnvironmentVariable(Constants.WebHookEndpoint);
-        //static string _duplicateActionEndpoint= Environment.GetEnvironmentVariable(Constants.DuplicateActionEndpoint);
+        static string _webHookEndpoint = Environment.GetEnvironmentVariable(Constants.WebHookEndpoint);     
         static string _signingKey = Constants.SigningKey;//Environment.GetEnvironmentVariable(Constants.SigningKey);
 
         //Media Service Account Info
-        static string _mediaServicesAccountName = "ccmediaservice";// Environment.GetEnvironmentVariable(Constants.MediaServiceAccout);
-        static string _mediaServicesAccountKey = "U4ZKdTAB1NGRUPwmDA9ze5RXyu51IZbQKds7nomut3E=";//  Environment.GetEnvironmentVariable(Constants.MediaServiceKey);
+        static string _mediaServicesAccountName = Environment.GetEnvironmentVariable(Constants.MediaServiceAccout);
+        static string _mediaServicesAccountKey = Environment.GetEnvironmentVariable(Constants.MediaServiceKey);
 
         static CloudMediaContext _context = null;
 
@@ -61,22 +60,28 @@ namespace JobMonitor
                     string requestMessageContents = Encoding.UTF8.GetString(requestBody);
 
                     NotificationMessage msg = JsonConvert.DeserializeObject<NotificationMessage>(requestMessageContents);
+                    log.Info("msg:"+ msg);
 
-                    if (SecurityHelper.VerifyHeaders(req, msg, log))
+                if (SecurityHelper.VerifyHeaders(req, msg, log))
+                {
+                    string newJobStateStr = (string)msg.Properties.Where(j => j.Key == "NewState").FirstOrDefault().Value;
+                    if (newJobStateStr == "Finished")
                     {
-                        string newJobStateStr = (string)msg.Properties.Where(j => j.Key == "NewState").FirstOrDefault().Value;
-                        if (newJobStateStr == "Finished")
+                        _context = new CloudMediaContext(new MediaServicesCredentials(
+                        _mediaServicesAccountName,
+                        _mediaServicesAccountKey));
+
+                        if (_context != null)
                         {
-                            _context = new CloudMediaContext(new MediaServicesCredentials(
-                            _mediaServicesAccountName,
-                            _mediaServicesAccountKey));
-
-                            if (_context != null)
+                            IAsset asset = MediaServiceHelper.GetAsset(_context, msg.Properties["JobId"]);
+                            string urlForClientStreaming;
+                            if (asset != null)
                             {
-                                string urlForClientStreaming = MediaServiceHelper.PublishAndBuildStreamingURLs(_context, msg.Properties["JobId"]);
-                                log.Info($"URL to the manifest for client streaming using HLS protocol: {urlForClientStreaming}");
-
-                                if(!string.IsNullOrEmpty(urlForClientStreaming))
+                               
+                                    urlForClientStreaming = MediaServiceHelper.PublishAndBuildStreamingURLs(_context, msg.Properties["JobId"]);
+                                    log.Info($"URL to the manifest for client streaming using HLS protocol: {urlForClientStreaming}");
+                               
+                                if (!string.IsNullOrEmpty(urlForClientStreaming))
                                 {
                                     try
                                     {
@@ -86,7 +91,8 @@ namespace JobMonitor
                                         HttpResponseMessage response;
                                         var client = new HttpClient();
                                         // Request body. Send Asset fileName and fileID
-                                        string body = string.Format(Constants.strtemplate, assetName);
+                                        string body = string.Format(Helper.Constants.strtemplate, assetName);
+                             
                                         log.Info("body:{0}", body);
 
                                         // Request body
@@ -94,11 +100,12 @@ namespace JobMonitor
                                         using (var content = new ByteArrayContent(byteData))
                                         {
                                             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                                            log.Info("try to call delete duplicate api with asset name:"+ assetName);
                                             response = await client.PostAsync(_webHookEndpoint, content);
                                         }
 
                                     }
-                                    catch(Exception ex)
+                                    catch (Exception ex)
                                     {
                                         log.Error(ex.Message);
                                         throw ex;
@@ -106,14 +113,15 @@ namespace JobMonitor
                                 }
                             }
                         }
+                    }
 
-                        return req.CreateResponse(HttpStatusCode.OK, string.Empty);
-                    }
-                    else
-                    {
-                        log.Info($"VerifyHeaders failed.");
-                        return req.CreateResponse(HttpStatusCode.BadRequest, "VerifyHeaders failed.");
-                    }
+                    return req.CreateResponse(HttpStatusCode.OK, string.Empty);
+                }
+                else
+                {
+                    log.Info($"VerifyHeaders failed.");
+                    return req.CreateResponse(HttpStatusCode.BadRequest, "VerifyHeaders failed.");
+                }
                 //}
                 //else
                 //{
