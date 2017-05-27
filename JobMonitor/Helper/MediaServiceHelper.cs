@@ -146,5 +146,12 @@ namespace JobMonitor.Helper
             return urlForClientStreaming;
 
         }
+
+        public static string GetAssetName(CloudMediaContext mediaContext, String jobID)
+        {
+            IJob job = mediaContext.Jobs.Where(j => j.Id == jobID).FirstOrDefault();
+            IAsset asset = job.OutputMediaAssets.FirstOrDefault();
+            return asset.Name;
+        }
     }
 }

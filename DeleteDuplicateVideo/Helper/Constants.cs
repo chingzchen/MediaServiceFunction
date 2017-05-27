@@ -14,5 +14,6 @@ namespace DeleteDuplicateVideo.Helper
         public const string MediaBlobName = "MediaServicesStorageAccountName";
         public const string MediaBlobKey = "MediaServicesStorageAccountKey";
         public const string SignatureHeaderValueTemplate = "sha256 ={0}";
+        public const string signature="ms-signature";
     }
 }

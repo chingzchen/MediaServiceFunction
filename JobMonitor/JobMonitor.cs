@@ -10,22 +10,25 @@ using System;
 using JobMonitor.Helper;
 using Microsoft.WindowsAzure.MediaServices.Client;
 using System.Text;
+using System.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace JobMonitor
 {
     public static class JobMonitor
     {
-        
-        static string _webHookEndpoint =  Environment.GetEnvironmentVariable(Constants.WebHookEndpoint);
-        static string _duplicateActionEndpoint= Environment.GetEnvironmentVariable(Constants.DuplicateActionEndpoint);
-        static string _signingKey = Environment.GetEnvironmentVariable(Constants.SigningKey);
-        static string _mediaServicesAccountName = Environment.GetEnvironmentVariable(Constants.MediaServiceAccout);
-        static string _mediaServicesAccountKey = Environment.GetEnvironmentVariable(Constants.MediaServiceKey);
+        //Webhook & security
+        static string _webHookEndpoint = "https://ccmediaprocess.azurewebsites.net/api/DeleteDuplicateVideo?code=Ndw0wcN0ZQihuxYyYv03ou5Af6oNhj9hMg1wWmbpSbvEwcC1vAV5KQ=="; //Environment.GetEnvironmentVariable(Constants.WebHookEndpoint);
+        //static string _duplicateActionEndpoint= Environment.GetEnvironmentVariable(Constants.DuplicateActionEndpoint);
+        static string _signingKey = Constants.SigningKey;//Environment.GetEnvironmentVariable(Constants.SigningKey);
+
+        //Media Service Account Info
+        static string _mediaServicesAccountName = "ccmediaservice";// Environment.GetEnvironmentVariable(Constants.MediaServiceAccout);
+        static string _mediaServicesAccountKey = "U4ZKdTAB1NGRUPwmDA9ze5RXyu51IZbQKds7nomut3E=";//  Environment.GetEnvironmentVariable(Constants.MediaServiceKey);
 
         static CloudMediaContext _context = null;
 
-        [FunctionName("HttpTriggerCSharp")]
+        [FunctionName("JobMonitor")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("Monitor Job function processed a request.");
@@ -53,8 +56,8 @@ namespace JobMonitor
                 byte[] signingKey = Convert.FromBase64String(_signingKey);
                 string signatureFromHeader = values.FirstOrDefault();
 
-                if (SecurityHelper.VerifyWebHookRequestSignature(requestBody, signatureFromHeader, signingKey))
-                {
+                //if (SecurityHelper.VerifyWebHookRequestSignature(requestBody, signatureFromHeader, signingKey))
+                //{
                     string requestMessageContents = Encoding.UTF8.GetString(requestBody);
 
                     NotificationMessage msg = JsonConvert.DeserializeObject<NotificationMessage>(requestMessageContents);
@@ -75,8 +78,31 @@ namespace JobMonitor
 
                                 if(!string.IsNullOrEmpty(urlForClientStreaming))
                                 {
-                                    //Call Delete duplicate Function for deleting duplicate assets
+                                    try
+                                    {
+                                        string assetName = MediaServiceHelper.GetAssetName(_context, msg.Properties["JobId"]);
+                                        //Call Delete duplicate Function for deleting duplicate assets
 
+                                        HttpResponseMessage response;
+                                        var client = new HttpClient();
+                                        // Request body. Send Asset fileName and fileID
+                                        string body = string.Format(Constants.strtemplate, assetName);
+                                        log.Info("body:{0}", body);
+
+                                        // Request body
+                                        byte[] byteData = Encoding.UTF8.GetBytes(body);
+                                        using (var content = new ByteArrayContent(byteData))
+                                        {
+                                            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                                            response = await client.PostAsync(_webHookEndpoint, content);
+                                        }
+
+                                    }
+                                    catch(Exception ex)
+                                    {
+                                        log.Error(ex.Message);
+                                        throw ex;
+                                    }
                                 }
                             }
                         }
@@ -88,12 +114,12 @@ namespace JobMonitor
                         log.Info($"VerifyHeaders failed.");
                         return req.CreateResponse(HttpStatusCode.BadRequest, "VerifyHeaders failed.");
                     }
-                }
-                else
-                {
-                    log.Info($"VerifyWebHookRequestSignature failed.");
-                    return req.CreateResponse(HttpStatusCode.BadRequest, "VerifyWebHookRequestSignature failed.");
-                }
+                //}
+                //else
+                //{
+                //    log.Info($"VerifyWebHookRequestSignature failed.");
+                //    return req.CreateResponse(HttpStatusCode.BadRequest, "VerifyWebHookRequestSignature failed.");
+                //}
             }
 
             return req.CreateResponse(HttpStatusCode.BadRequest, "Generic Error.");

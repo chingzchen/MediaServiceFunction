@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Azure.WebJobs;
@@ -9,7 +8,7 @@ using Microsoft.WindowsAzure.MediaServices.Client;
 using System;
 using Microsoft.WindowsAzure.Storage.Auth;
 using System.Collections.Generic;
-using DeleteDuplicateVideo.Helper;
+
 
 namespace DeleteDuplicateVideo
 {
@@ -18,24 +17,20 @@ namespace DeleteDuplicateVideo
         private static MediaServicesCredentials cachedcredential = null;
 
         //Media Service Account Info
-        private static readonly string _mediaServicesAccountName = GetEnvironmentVariable(Constants.MediaServiceAccout);
-        private static readonly string _mediaServicesAccountKey = GetEnvironmentVariable(Constants.MediaServiceKey);
+        private static readonly string _mediaServicesAccountName = "ccmediaservice";//GetEnvironmentVariable(Constants.MediaServiceAccout);
+        private static readonly string _mediaServicesAccountKey = "U4ZKdTAB1NGRUPwmDA9ze5RXyu51IZbQKds7nomut3E=";//GetEnvironmentVariable(Constants.MediaServiceKey);
 
         //Storage Account Info
-        static string _storageAccountName = GetEnvironmentVariable(Constants.MediaBlobName);
-        static string _storageAccountKey = GetEnvironmentVariable(Constants.MediaBlobKey);
-
-        //Security
-        private static string _webHookEndpoint = GetEnvironmentVariable("WebHookEndpoint");
-        private static string _signingKey = GetEnvironmentVariable("SigningKey");
+        static string _storageAccountName = "ccmediaservice";//GetEnvironmentVariable(Constants.MediaBlobName);
+        static string _storageAccountKey = "akYtOgqTIfvC7Ll952NY9yqXgDv4Cm2rchO1B+1Wdcq/vwHk6OxhSMTgyUonReMXVRhDVokGNYfgETlSB2Wr6g==";// GetEnvironmentVariable(Constants.MediaBlobKey);      
 
         //MEdia Service Contect
         private static CloudMediaContext _context = null;
 
-        [FunctionName("HttpTriggerWithParametersCSharp")]
+        [FunctionName("DeleteDuplicateVideo")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")]HttpRequestMessage req, TraceWriter log)
         {//, Route = "HttpTriggerCSharp/name/{filename}"
-            log.Info("C# HTTP trigger function processed a request.");
+            log.Info("DeleteDuplicateVideo function processed a request.");
             string filename = string.Empty;
             string responsestr = string.Empty; 
             try
