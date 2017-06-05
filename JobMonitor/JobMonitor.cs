@@ -19,7 +19,7 @@ namespace JobMonitor
     {
         //Webhook & security
         static string _webHookEndpoint = Environment.GetEnvironmentVariable(Constants.WebHookEndpoint);     
-        static string _signingKey = Constants.SigningKey;//Environment.GetEnvironmentVariable(Constants.SigningKey);
+        static string _signingKey = Environment.GetEnvironmentVariable(Constants.SigningKey);
 
         //Media Service Account Info
         static string _mediaServicesAccountName = Environment.GetEnvironmentVariable(Constants.MediaServiceAccout);
@@ -31,17 +31,6 @@ namespace JobMonitor
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
         {
             log.Info("Monitor Job function processed a request.");
-
-            //// parse query parameter
-            //string name = req.GetQueryNameValuePairs()
-            //    .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
-            //    .Value;
-
-            //// Get request body
-            //dynamic data = await req.Content.ReadAsAsync<object>();
-
-            //// Set name to query string or body data
-            //name = name ?? data?.name;           
 
             Task<byte[]> taskForRequestBody = req.Content.ReadAsByteArrayAsync();
             byte[] requestBody = await taskForRequestBody;
@@ -55,12 +44,10 @@ namespace JobMonitor
                 byte[] signingKey = Convert.FromBase64String(_signingKey);
                 string signatureFromHeader = values.FirstOrDefault();
 
-                //if (SecurityHelper.VerifyWebHookRequestSignature(requestBody, signatureFromHeader, signingKey))
-                //{
-                    string requestMessageContents = Encoding.UTF8.GetString(requestBody);
+                string requestMessageContents = Encoding.UTF8.GetString(requestBody);
 
-                    NotificationMessage msg = JsonConvert.DeserializeObject<NotificationMessage>(requestMessageContents);
-                    log.Info("msg:"+ msg);
+                NotificationMessage msg = JsonConvert.DeserializeObject<NotificationMessage>(requestMessageContents);
+                log.Info("msg:" + msg);
 
                 if (SecurityHelper.VerifyHeaders(req, msg, log))
                 {
@@ -77,10 +64,10 @@ namespace JobMonitor
                             string urlForClientStreaming;
                             if (asset != null)
                             {
-                               
-                                    urlForClientStreaming = MediaServiceHelper.PublishAndBuildStreamingURLs(_context, msg.Properties["JobId"]);
-                                    log.Info($"URL to the manifest for client streaming using HLS protocol: {urlForClientStreaming}");
-                               
+
+                                urlForClientStreaming = MediaServiceHelper.PublishAndBuildStreamingURLs(_context, msg.Properties["JobId"]);
+                                log.Info($"URL to the manifest for client streaming using HLS protocol: {urlForClientStreaming}");
+
                                 if (!string.IsNullOrEmpty(urlForClientStreaming))
                                 {
                                     try
@@ -92,7 +79,7 @@ namespace JobMonitor
                                         var client = new HttpClient();
                                         // Request body. Send Asset fileName and fileID
                                         string body = string.Format(Helper.Constants.strtemplate, assetName);
-                             
+
                                         log.Info("body:{0}", body);
 
                                         // Request body
@@ -100,7 +87,7 @@ namespace JobMonitor
                                         using (var content = new ByteArrayContent(byteData))
                                         {
                                             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                                            log.Info("try to call delete duplicate api with asset name:"+ assetName);
+                                            log.Info("try to call delete duplicate api with asset name:" + assetName);
                                             response = await client.PostAsync(_webHookEndpoint, content);
                                         }
 
@@ -122,12 +109,6 @@ namespace JobMonitor
                     log.Info($"VerifyHeaders failed.");
                     return req.CreateResponse(HttpStatusCode.BadRequest, "VerifyHeaders failed.");
                 }
-                //}
-                //else
-                //{
-                //    log.Info($"VerifyWebHookRequestSignature failed.");
-                //    return req.CreateResponse(HttpStatusCode.BadRequest, "VerifyWebHookRequestSignature failed.");
-                //}
             }
 
             return req.CreateResponse(HttpStatusCode.BadRequest, "Generic Error.");

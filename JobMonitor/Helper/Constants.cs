@@ -15,7 +15,7 @@ namespace JobMonitor.Helper
         public const string MediaBlobKey = "MediaServicesStorageAccountKey";
         public const string WebHookEndpoint = "WebHookEndpoint";
         public const string DeleteWebHookEndpoint = "DeleteWebHookEndpoint";
-        public const string SigningKey = "j0txf1f8msjytzvpe40nxbpxdcxtqcgxy0nt";
+        public const string SigningKey = "SigningKey";
         public const string SignatureHeaderValueTemplate = "sha256 ={0}";
         public const string DuplicateActionEndpoint = "DuplicateActionEndpoint";
         public const string strtemplate = "{{name:\"{0}\"}}";
