@@ -1,7 +1,0 @@
-{
-  "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=cchackweek;AccountKey=e3yLBBRXD73Lnd2nVGpLrEnxf06fwWX/NSjsrSiUd3j9srXLoa3CfXVfIJU+izsB9tSixKHs9IJQTFcZzl+UzQ==;EndpointSuffix=core.windows.net",
-    "AzureWebJobsDashboard": ""
-  }
-}

@@ -29,7 +29,7 @@ namespace DeleteDuplicateVideo
 
         [FunctionName("DeleteDuplicateVideo")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")]HttpRequestMessage req, TraceWriter log)
-        {//, Route = "HttpTriggerCSharp/name/{filename}"
+        {
             log.Info("DeleteDuplicateVideo function processed a request.");
             string filename = string.Empty;
             string responsestr = string.Empty; 

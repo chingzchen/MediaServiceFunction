@@ -51,6 +51,7 @@ namespace JobMonitor
 
                 if (SecurityHelper.VerifyHeaders(req, msg, log))
                 {
+                    log.Info("VerifyHeaders Succeed!");
                     string newJobStateStr = (string)msg.Properties.Where(j => j.Key == "NewState").FirstOrDefault().Value;
                     if (newJobStateStr == "Finished")
                     {
