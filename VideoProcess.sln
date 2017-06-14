@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26510.0
+VisualStudioVersion = 15.0.26606.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeleteDuplicateVideo", "DeleteDuplicateVideo\DeleteDuplicateVideo.csproj", "{DDBA74AC-C9A6-49B0-BFFE-98F51969B4DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobMonitor", "JobMonitor\JobMonitor.csproj", "{489073F6-F578-4135-AE42-7C7B3C60C257}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaServiceApp", "..\MediaService\MediaServiceApp\MediaServiceApp\MediaServiceApp.csproj", "{D71E2DE3-05D2-4800-B052-066A9BC5B21D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaServiceApp", "MediaServiceApp\MediaServiceApp\MediaServiceApp.csproj", "{D71E2DE3-05D2-4800-B052-066A9BC5B21D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
