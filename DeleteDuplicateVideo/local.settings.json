@@ -1,11 +1,11 @@
 {
     "IsEncrypted": false,
   "Values": {
-    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=ccmediafunctionbb;AccountKey=LYFP9aAXf9aTkOmctiNt+i4Itf/ZKyJRBvRZqWDks7S3qqis+ToktE5AUF0ZI/Oy2AcEMw5tP+iMC16bSJRt+Q==;EndpointSuffix=core.windows.net",
+    "AzureWebJobsStorage": "",
     "AzureWebJobsDashboard": "",
-    "AMSAccount": "ccmediaservice",
-    "AMSKey": "U4ZKdTAB1NGRUPwmDA9ze5RXyu51IZbQKds7nomut3E=",
-    "MediaServicesStorageAccountName": "ccmediaservice",
-    "MediaServicesStorageAccountKey": "akYtOgqTIfvC7Ll952NY9yqXgDv4Cm2rchO1B+1Wdcq/vwHk6OxhSMTgyUonReMXVRhDVokGNYfgETlSB2Wr6g=="
+    "AMSAccount": "",
+    "AMSKey": "=",
+    "MediaServicesStorageAccountName": "",
+    "MediaServicesStorageAccountKey": ""
   }
 }
